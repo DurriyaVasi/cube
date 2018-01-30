@@ -74,6 +74,9 @@ private:
 	
 	void createProj(float fovDegrees, float near, float far, float aspect);
 
+	glm::mat4 translate(float xDiff, float yDiff, float zDiff);
+	glm::mat4 rotate(char axis, float degrees);
+
 	glm::vec2 orthographicProjection(glm::vec4 point);
 	glm::vec2 projection(glm::vec4 point);
 

@@ -57,6 +57,7 @@ void A2::init()
 	mapVboDataToVertexAttributeLocation();
 
 	createProj(fovDegrees, near, far, aspect);
+	view = translate(0.0f, 0.0f, -5.0f);
 }
 
 //----------------------------------------------------------------------------------------
@@ -202,7 +203,7 @@ vec2 A2::projection(vec4 point) {
 	return ans;
 }
 
-mat4 translate(float xDiff, float yDiff, float zDiff) {
+mat4 A2::translate(float xDiff, float yDiff, float zDiff) {
 	mat4 trans(1.0f);
 	trans[3][0] = xDiff;
 	trans[3][1] = yDiff;
@@ -210,7 +211,7 @@ mat4 translate(float xDiff, float yDiff, float zDiff) {
 	return trans;
 }
 
-mat4 rotate(char axis, float degrees) {
+mat4 A2::rotate(char axis, float degrees) {
 	mat4 rot(1.0f);
 	if (axis == 'x') {
 		rot[1][1] = cos(radians(degrees));
@@ -305,8 +306,6 @@ void A2::drawCube()
 	vec2 cubeLinesProj[12][2];
 
 	setLineColour(vec3(0.0f, 0.0f, 0.0f));
-	
-	view = translate(0.0f, 0.0f, -5.0f);
 
 	for(int i = 0; i < 12; i++) {
 		cubeLinesProj[i][0] = projection(cubeLines[i][0]);
