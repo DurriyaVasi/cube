@@ -25,7 +25,7 @@ VertexData::VertexData()
 //----------------------------------------------------------------------------------------
 // Constructor
 A2::A2()
-	: m_currentLineColour(vec3(0.0f))
+	: m_currentLineColour(vec3(0.0f)), worldMat(mat4(1.0f)), proj(mat4(1.0f)), view(mat4(1.0f)), fovDegrees(60.0f), near(2.0f), far(20.0f), aspect(1.0f)
 {
 
 }
@@ -55,6 +55,8 @@ void A2::init()
 	generateVertexBuffers();
 
 	mapVboDataToVertexAttributeLocation();
+
+	createProj(fovDegrees, near, far, aspect);
 }
 
 //----------------------------------------------------------------------------------------
@@ -178,6 +180,157 @@ void A2::drawLine(
 	m_vertexData.numVertices += 2;
 }
 
+void A2::createProj(float fovDegrees, float near, float far, float aspect) {
+	proj = mat4(0.0f);
+	float cottheta = (1/(tan(radians(fovDegrees/2))));
+	proj[0][0] = cottheta/aspect;
+	proj[1][1] = cottheta;
+	proj[2][2] = 1 * (far + near)/(far - near);
+	proj[3][2] = (-2 * far * near)/(far - near);
+	proj[2][3] = 1;
+	//cout << proj << endl;
+	//cout << proj[3][3] << endl;
+}
+
+vec2 A2::orthographicProjection(vec4 point) {
+	vec2 orthProj = vec2(point[0]/3, point[1]/3);
+	return orthProj;
+}
+
+vec2 A2::projection(vec4 point) {
+	vec4 point2 = proj * view * worldMat * point;
+	point2 = normalize(point2);
+	vec2 ans(point2[0], point2[1]);
+	//cout << "z" << point2[2] << "z" << point2[3] << "z";
+	return ans;
+}
+
+mat4 translate(float xDiff, float yDiff, float zDiff) {
+	mat4 trans(1.0f);
+	trans[3][0] = xDiff;
+	trans[3][1] = yDiff;
+	trans[3][2] = zDiff;
+	return trans;
+}
+
+mat4 rotate(char axis, float degrees) {
+	mat4 rot(1.0f);
+	if (axis == 'x') {
+		rot[1][1] = cos(radians(degrees));
+		rot[1][2] = sin(radians(degrees));
+		rot[2][1] = -1 * sin(radians(degrees));
+		rot[2][2] = cos(radians(degrees));
+	}
+	if (axis == 'y') {
+		rot[0][0] = cos(radians(degrees));
+		rot[2][0] = sin(radians(degrees));
+		rot[0][2] = -1 * sin(radians(degrees));
+		rot[2][2] = cos(radians(degrees));
+	}
+	if (axis == 'z') {
+		rot[0][0] = cos(radians(degrees));
+		rot[1][0] = -1 * sin(radians(degrees));
+		rot[0][1] = sin(radians(degrees));
+		rot[1][1] = cos(radians(degrees));
+	}
+	return rot;
+}
+	
+		
+
+void A2::drawCube()
+{
+	vec4 line1a(1.0f, 1.0f, 1.0f, 1.0f);
+	vec4 line1b(-1.0f, 1.0f, 1.0f, 1.0f);
+
+ 	vec4 line2a(-1.0f, 1.0f, 1.0f, 1.0f);
+	vec4 line2b(-1.0f, -1.0f, 1.0f, 1.0f);
+
+	vec4 line3a(-1.0f, -1.0f, 1.0f, 1.0f);
+	vec4 line3b(1.0f, -1.0f, 1.0f, 1.0f);
+
+	vec4 line4a(1.0f, -1.0f, 1.0f, 1.0f);
+	vec4 line4b(1.0f, 1.0f, 1.0f, 1.0f);
+
+	vec4 line5a(1.0f, 1.0f, 1.0f, 1.0f);
+	vec4 line5b(1.0f, 1.0f, -1.0f, 1.0f);
+
+	vec4 line6a(-1.0f, 1.0f, 1.0f, 1.0f);
+        vec4 line6b(-1.0f, 1.0f, -1.0f, 1.0f);
+
+	vec4 line7a(-1.0f, -1.0f, 1.0f, 1.0f);
+        vec4 line7b(-1.0f, -1.0f, -1.0f, 1.0f);
+
+	vec4 line8a(1.0f, -1.0f, 1.0f, 1.0f);
+        vec4 line8b(1.0f, -1.0f, -1.0f, 1.0f);
+
+	vec4 line9a(1.0f, 1.0f, -1.0f, 1.0f);
+        vec4 line9b(-1.0f, 1.0f, -1.0f, 1.0f);
+
+	vec4 line10a(-1.0f, 1.0f, -1.0f, 1.0f);
+        vec4 line10b(-1.0f, -1.0f, -1.0f, 1.0f);
+
+	vec4 line11a(-1.0f, -1.0f, -1.0f, 1.0f);
+        vec4 line11b(1.0f, -1.0f, -1.0f, 1.0f);
+
+	vec4 line12a(1.0f, -1.0f, -1.0f, 1.0f);
+        vec4 line12b(1.0f, 1.0f, -1.0f, 1.0f);
+
+	vec4 cubeLines[12][2];
+	
+	cubeLines[0][0] = line1a;
+	cubeLines[0][1] = line1b;
+	cubeLines[1][0] = line2a;
+	cubeLines[1][1] = line2b;
+	cubeLines[2][0] = line3a;
+        cubeLines[2][1] = line3b;
+	cubeLines[3][0] = line4a;
+        cubeLines[3][1] = line4b;
+	cubeLines[4][0] = line5a;
+        cubeLines[4][1] = line5b;
+	cubeLines[5][0] = line6a;
+        cubeLines[5][1] = line6b;
+	cubeLines[6][0] = line7a;
+        cubeLines[6][1] = line7b;
+	cubeLines[7][0] = line8a;
+        cubeLines[7][1] = line8b;
+	cubeLines[8][0] = line9a;
+        cubeLines[8][1] = line9b;
+	cubeLines[9][0] = line10a;
+        cubeLines[9][1] = line10b;
+	cubeLines[10][0] = line11a;
+        cubeLines[10][1] = line11b;
+	cubeLines[11][0] = line12a;
+        cubeLines[11][1] = line12b;
+
+	
+
+	vec2 cubeLinesProj[12][2];
+/*
+	for (int i = 0; i < 12; i++) {
+		cubeLinesProj[i][0] = orthographicProjection(cubeLines[i][1]);
+		cubeLinesProj[i][1] = orthographicProjection(cubeLines[i][2]); 		
+	}*/
+
+	setLineColour(vec3(0.0f, 0.0f, 0.0f));
+
+//	worldMat = mat4();//translate(1.0f, 1.0f, 1.0f); 
+	
+	view = translate(0.0f, 0.0f, -5.0f);
+
+	for(int i = 0; i < 12; i++) {
+		cubeLinesProj[i][0] = projection(cubeLines[i][0]);
+		cubeLinesProj[i][1] = projection(cubeLines[i][1]);
+//		cout << "Line " << cubeLinesProj[i][0] << ", " << cubeLinesProj[i][1] << endl;
+	}
+	
+	for (int i = 0; i < 12; i++) {
+		drawLine(cubeLinesProj[i][0], cubeLinesProj[i][1]);
+	}
+//	cout << proj << endl;
+}
+
+
 //----------------------------------------------------------------------------------------
 /*
  * Called once per frame, before guiLogic().
@@ -189,7 +342,7 @@ void A2::appLogic()
 	// Call at the beginning of frame, before drawing lines:
 	initLineData();
 
-	// Draw outer square:
+/*	// Draw outer square:
 	setLineColour(vec3(1.0f, 0.7f, 0.8f));
 	drawLine(vec2(-0.5f, -0.5f), vec2(0.5f, -0.5f));
 	drawLine(vec2(0.5f, -0.5f), vec2(0.5f, 0.5f));
@@ -202,7 +355,9 @@ void A2::appLogic()
 	drawLine(vec2(-0.25f, -0.25f), vec2(0.25f, -0.25f));
 	drawLine(vec2(0.25f, -0.25f), vec2(0.25f, 0.25f));
 	drawLine(vec2(0.25f, 0.25f), vec2(-0.25f, 0.25f));
-	drawLine(vec2(-0.25f, 0.25f), vec2(-0.25f, -0.25f));
+	drawLine(vec2(-0.25f, 0.25f), vec2(-0.25f, -0.25f));*/
+
+	drawCube();
 }
 
 //----------------------------------------------------------------------------------------

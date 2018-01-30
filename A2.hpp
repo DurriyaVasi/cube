@@ -69,5 +69,19 @@ protected:
 	VertexData m_vertexData;
 
 	glm::vec3 m_currentLineColour;
+private:
+        void drawCube();
+	
+	void createProj(float fovDegrees, float near, float far, float aspect);
 
+	glm::vec2 orthographicProjection(glm::vec4 point);
+	glm::vec2 projection(glm::vec4 point);
+
+	glm::mat4 worldMat;
+	glm::mat4 view;
+	glm::mat4 proj;
+	float fovDegrees;
+	float near;
+	float far;
+	float aspect;
 };
