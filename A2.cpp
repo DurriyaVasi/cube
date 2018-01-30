@@ -25,9 +25,9 @@ VertexData::VertexData()
 //----------------------------------------------------------------------------------------
 // Constructor
 A2::A2()
-	: m_currentLineColour(vec3(0.0f)), worldMat(mat4(1.0f)), proj(mat4(1.0f)), view(mat4(1.0f)), fovDegrees(60.0f), near(2.0f), far(20.0f), aspect(1.0f)
+	: m_currentLineColour(vec3(0.0f)), worldMat(mat4(1.0f)), view(mat4(1.0f)), proj(mat4(1.0f)), model(mat4(1.0f)), modelScale(mat4(1.0f)), fovDegrees(60.0f), near(2.0f), far(20.0f), aspect(1.0f), mouseLeftPressed(false), mouseRightPressed(false), mouseMiddlePressed(false), mode('O'), oldX(0)
 {
-
+	
 }
 
 //----------------------------------------------------------------------------------------
@@ -197,7 +197,7 @@ vec2 A2::orthographicProjection(vec4 point) {
 }
 
 vec2 A2::projection(vec4 point) {
-	vec4 point2 = proj * view * worldMat * point;
+	vec4 point2 = proj * view * worldMat * modelScale * model * point;
 	point2 = normalize(point2);
 	vec2 ans(point2[0], point2[1]);
 	return ans;
@@ -234,7 +234,13 @@ mat4 A2::rotate(char axis, float degrees) {
 	return rot;
 }
 	
-		
+mat4 A2::scale(float xScale, float yScale, float zScale) {
+	mat4 sc(1.0f);
+	sc[0][0] = xScale;
+	sc[1][1] = yScale;
+	sc[2][2] = zScale;
+	return sc;
+}		
 
 void A2::drawCube()
 {
@@ -300,8 +306,6 @@ void A2::drawCube()
         cubeLines[10][1] = line11b;
 	cubeLines[11][0] = line12a;
         cubeLines[11][1] = line12b;
-
-	
 
 	vec2 cubeLinesProj[12][2];
 
@@ -457,7 +461,116 @@ bool A2::mouseMoveEvent (
 ) {
 	bool eventHandled(false);
 
-	// Fill in with event handling code...
+	double xDiff = xPos - oldX;
+	oldX = xPos;
+
+	if (!ImGui::IsMouseHoveringAnyWindow()) {
+		if (mode == 'O') {
+			float angle = (float)(xDiff * 5 * -1); //inverse so -1
+			if (mouseLeftPressed) {
+				mat4 rot = rotate('x', angle);
+				view = rot * view;
+			}
+			if (mouseMiddlePressed) {
+				mat4 rot = rotate('y', angle);
+				view = rot * view;
+			}
+			if (mouseRightPressed) {
+				mat4 rot = rotate('z', angle);
+				view = rot * view;
+			}
+			eventHandled = true;
+		}
+		else if (mode == 'N') {
+			float amount = (float) (xDiff * -1); // inverse so -1
+			if (mouseLeftPressed) {
+				mat4 trans = translate(amount, 0.0f, 0.0f);
+				view = trans * view;
+			}
+			if (mouseMiddlePressed) {
+				mat4 trans = translate(0.0f, amount, 0.0f);
+				view = trans * view;
+			}
+			if (mouseRightPressed) {
+				mat4 trans = translate(0.0f, 0.0f, amount);
+				view = trans * view;
+			}
+			eventHandled = true;
+		}
+		else if (mode == 'P') {
+			float angle = (float)(xDiff * 5);
+			float amount = (float) (xDiff);
+			if (mouseLeftPressed) {
+				fovDegrees = fovDegrees + angle;
+				if (fovDegrees > 160) {
+					fovDegrees = 160;
+				}
+				else if (fovDegrees < 5) {
+					fovDegrees = 5;
+				}
+				createProj(fovDegrees, near, far, aspect);
+			}
+			if (mouseMiddlePressed) {
+				createProj(fovDegrees, near + amount, far, aspect);
+			}
+			if (mouseRightPressed) {
+				createProj(fovDegrees, near, far + amount, aspect);
+			}
+			eventHandled = true;
+		}
+		else if (mode == 'R') {
+			float angle = (float)(xDiff * 5);
+                        if (mouseLeftPressed) {
+                                mat4 rot = rotate('x', angle);
+                                model = rot * model;
+                        }
+                        if (mouseMiddlePressed) {
+                                mat4 rot = rotate('y', angle);
+                                model = rot * model;
+                        }
+                        if (mouseRightPressed) {
+                                mat4 rot = rotate('z', angle);
+                                model = rot * model;
+                        }
+                        eventHandled = true;
+		}
+		else if (mode == 'T') {
+			float amount = (float) (xDiff);
+                        if (mouseLeftPressed) {
+                                mat4 trans = translate(amount, 0.0f, 0.0f);
+                                model = trans * model;
+                        }
+                        if (mouseMiddlePressed) {
+                                mat4 trans = translate(0.0f, amount, 0.0f);
+                                model = trans * model;
+                        }
+                        if (mouseRightPressed) {
+                                mat4 trans = translate(0.0f, 0.0f, amount);
+                                model = trans * model;
+                        }
+                        eventHandled = true;
+                }
+		else if (mode == 'S') {
+			float amount = ((float)xDiff)/8.0f;
+			if (mouseLeftPressed) {
+				mat4 sc = scale(amount, 0.0f, 0.0f);
+				modelScale = sc * modelScale;
+			}
+			if (mouseMiddlePressed) {
+				mat4 sc = scale(0.0f, amount, 0.0f);
+				modelScale = sc * modelScale;
+			}
+			if (mouseRightPressed) {
+				mat4 sc = scale(0.0f, 0.0f, amount);
+				modelScale = sc * modelScale;
+			}
+			eventHandled = true;
+		}
+		else if (mode == 'V') {
+			
+			//TODO
+		}
+	}											
 
 	return eventHandled;
 }
@@ -473,7 +586,34 @@ bool A2::mouseButtonInputEvent (
 ) {
 	bool eventHandled(false);
 
-	// Fill in with event handling code...
+	if (actions == GLFW_RELEASE) {
+		if (button == GLFW_MOUSE_BUTTON_LEFT) {
+                	mouseLeftPressed = false;
+                }
+                if (button == GLFW_MOUSE_BUTTON_RIGHT) {
+                	mouseRightPressed = false;
+                }
+                if (button == GLFW_MOUSE_BUTTON_MIDDLE) {
+                	mouseMiddlePressed = false;
+                }
+
+		eventHandled = true;
+	}
+
+	if (!ImGui::IsMouseHoveringAnyWindow()) {
+		if (actions == GLFW_PRESS) {
+			if (button == GLFW_MOUSE_BUTTON_LEFT) {
+				mouseLeftPressed = true;
+			}
+			if (button == GLFW_MOUSE_BUTTON_RIGHT) {
+				mouseRightPressed = true;
+			}
+			if (button == GLFW_MOUSE_BUTTON_MIDDLE) {
+				mouseMiddlePressed = true;
+			}
+			eventHandled = true;
+		}
+	}
 
 	return eventHandled;
 }
@@ -488,7 +628,7 @@ bool A2::mouseScrollEvent (
 ) {
 	bool eventHandled(false);
 
-	// Fill in with event handling code...
+	// Fill in
 
 	return eventHandled;
 }
@@ -518,6 +658,31 @@ bool A2::keyInputEvent (
 		int mods
 ) {
 	bool eventHandled(false);
+	
+	if (action == GLFW_PRESS) {
+		if (key == GLFW_KEY_O) {
+			mode = 'O';
+		}
+		else if (key == GLFW_KEY_N) {
+			mode = 'N';
+		}
+		else if (key == GLFW_KEY_P) {
+			mode = 'P';
+		}
+		else if (key == GLFW_KEY_R) {
+			mode = 'R';
+		}
+		else if (key == GLFW_KEY_T) {
+			mode = 'T';
+		}
+		else if (key == GLFW_KEY_S) {
+			mode = 'S';
+		}
+		else if (key == GLFW_KEY_V) {
+			mode = 'V';
+		}
+		eventHandled = true;
+	}
 
 	// Fill in with event handling code...
 

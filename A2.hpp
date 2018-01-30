@@ -76,6 +76,7 @@ private:
 
 	glm::mat4 translate(float xDiff, float yDiff, float zDiff);
 	glm::mat4 rotate(char axis, float degrees);
+	glm::mat4 scale(float xScale, float yScale, float zScale);
 
 	glm::vec2 orthographicProjection(glm::vec4 point);
 	glm::vec2 projection(glm::vec4 point);
@@ -83,8 +84,15 @@ private:
 	glm::mat4 worldMat;
 	glm::mat4 view;
 	glm::mat4 proj;
+	glm::mat4 model;
+	glm::mat4 modelScale;
 	float fovDegrees;
 	float near;
 	float far;
 	float aspect;
+	bool mouseLeftPressed;
+	bool mouseRightPressed;
+	bool mouseMiddlePressed;
+	char mode;
+	double oldX;
 };
