@@ -93,6 +93,7 @@ private:
 	bool mouseLeftPressed;
 	bool mouseRightPressed;
 	bool mouseMiddlePressed;
-	char mode;
+	int mode;
 	double oldX;
+	char* modes[7] = {"O", "N", "P", "R", "T", "S", "V"};
 };

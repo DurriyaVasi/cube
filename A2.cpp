@@ -25,9 +25,9 @@ VertexData::VertexData()
 //----------------------------------------------------------------------------------------
 // Constructor
 A2::A2()
-	: m_currentLineColour(vec3(0.0f)), worldMat(mat4(1.0f)), view(mat4(1.0f)), proj(mat4(1.0f)), model(mat4(1.0f)), modelScale(mat4(1.0f)), fovDegrees(60.0f), near(2.0f), far(20.0f), aspect(1.0f), mouseLeftPressed(false), mouseRightPressed(false), mouseMiddlePressed(false), mode('O'), oldX(0)
+	: m_currentLineColour(vec3(0.0f)), worldMat(mat4(1.0f)), view(mat4(1.0f)), proj(mat4(1.0f)), model(mat4(1.0f)), modelScale(mat4(1.0f)), fovDegrees(60.0f), near(2.0f), far(20.0f), aspect(1.0f), mouseLeftPressed(false), mouseRightPressed(false), mouseMiddlePressed(false), mode(0), oldX(0)
 {
-	
+
 }
 
 //----------------------------------------------------------------------------------------
@@ -380,6 +380,18 @@ void A2::guiLogic()
 		}
 
 		ImGui::Text( "Framerate: %.1f FPS", ImGui::GetIO().Framerate );
+		ImGui::Text( "Near Plane: %.1f", near);
+		ImGui::Text( "Far Plane: %.1f", far);
+		ImGui::Text( "Mode: %.1d", mode);
+
+		for (int i = 0; i < 7; i++) {
+			ImGui::PushID( i );
+                        if( ImGui::RadioButton( modes[i], &mode, i ) ) {
+                                
+                        }
+                        ImGui::PopID();
+                }
+
 
 	ImGui::End();
 }
@@ -465,7 +477,7 @@ bool A2::mouseMoveEvent (
 	oldX = xPos;
 
 	if (!ImGui::IsMouseHoveringAnyWindow()) {
-		if (mode == 'O') {
+		if (mode == 0) {
 			float angle = (float)(xDiff * 5 * -1); //inverse so -1
 			if (mouseLeftPressed) {
 				mat4 rot = rotate('x', angle);
@@ -481,7 +493,7 @@ bool A2::mouseMoveEvent (
 			}
 			eventHandled = true;
 		}
-		else if (mode == 'N') {
+		else if (mode == 1) {
 			float amount = (float) (xDiff * -1); // inverse so -1
 			if (mouseLeftPressed) {
 				mat4 trans = translate(amount, 0.0f, 0.0f);
@@ -497,7 +509,7 @@ bool A2::mouseMoveEvent (
 			}
 			eventHandled = true;
 		}
-		else if (mode == 'P') {
+		else if (mode == 2) {
 			float angle = (float)(xDiff * 5);
 			float amount = (float) (xDiff);
 			if (mouseLeftPressed) {
@@ -518,7 +530,7 @@ bool A2::mouseMoveEvent (
 			}
 			eventHandled = true;
 		}
-		else if (mode == 'R') {
+		else if (mode == 3) {
 			float angle = (float)(xDiff * 5);
                         if (mouseLeftPressed) {
                                 mat4 rot = rotate('x', angle);
@@ -534,7 +546,7 @@ bool A2::mouseMoveEvent (
                         }
                         eventHandled = true;
 		}
-		else if (mode == 'T') {
+		else if (mode == 4) {
 			float amount = (float) (xDiff);
                         if (mouseLeftPressed) {
                                 mat4 trans = translate(amount, 0.0f, 0.0f);
@@ -550,7 +562,7 @@ bool A2::mouseMoveEvent (
                         }
                         eventHandled = true;
                 }
-		else if (mode == 'S') {
+		else if (mode == 5) {
 			float amount = ((float)xDiff)/8.0f;
 			if (mouseLeftPressed) {
 				mat4 sc = scale(amount, 0.0f, 0.0f);
@@ -566,7 +578,7 @@ bool A2::mouseMoveEvent (
 			}
 			eventHandled = true;
 		}
-		else if (mode == 'V') {
+		else if (mode == 6) {
 			
 			//TODO
 		}
@@ -661,25 +673,25 @@ bool A2::keyInputEvent (
 	
 	if (action == GLFW_PRESS) {
 		if (key == GLFW_KEY_O) {
-			mode = 'O';
+			mode = 0;
 		}
 		else if (key == GLFW_KEY_N) {
-			mode = 'N';
+			mode = 1;
 		}
 		else if (key == GLFW_KEY_P) {
-			mode = 'P';
+			mode = 2;
 		}
 		else if (key == GLFW_KEY_R) {
-			mode = 'R';
+			mode = 3;
 		}
 		else if (key == GLFW_KEY_T) {
-			mode = 'T';
+			mode = 4;
 		}
 		else if (key == GLFW_KEY_S) {
-			mode = 'S';
+			mode = 5;
 		}
 		else if (key == GLFW_KEY_V) {
-			mode = 'V';
+			mode = 6;
 		}
 		eventHandled = true;
 	}
