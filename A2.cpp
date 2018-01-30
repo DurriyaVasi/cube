@@ -188,8 +188,6 @@ void A2::createProj(float fovDegrees, float near, float far, float aspect) {
 	proj[2][2] = 1 * (far + near)/(far - near);
 	proj[3][2] = (-2 * far * near)/(far - near);
 	proj[2][3] = 1;
-	//cout << proj << endl;
-	//cout << proj[3][3] << endl;
 }
 
 vec2 A2::orthographicProjection(vec4 point) {
@@ -201,7 +199,6 @@ vec2 A2::projection(vec4 point) {
 	vec4 point2 = proj * view * worldMat * point;
 	point2 = normalize(point2);
 	vec2 ans(point2[0], point2[1]);
-	//cout << "z" << point2[2] << "z" << point2[3] << "z";
 	return ans;
 }
 
@@ -306,28 +303,19 @@ void A2::drawCube()
 	
 
 	vec2 cubeLinesProj[12][2];
-/*
-	for (int i = 0; i < 12; i++) {
-		cubeLinesProj[i][0] = orthographicProjection(cubeLines[i][1]);
-		cubeLinesProj[i][1] = orthographicProjection(cubeLines[i][2]); 		
-	}*/
 
 	setLineColour(vec3(0.0f, 0.0f, 0.0f));
-
-//	worldMat = mat4();//translate(1.0f, 1.0f, 1.0f); 
 	
 	view = translate(0.0f, 0.0f, -5.0f);
 
 	for(int i = 0; i < 12; i++) {
 		cubeLinesProj[i][0] = projection(cubeLines[i][0]);
 		cubeLinesProj[i][1] = projection(cubeLines[i][1]);
-//		cout << "Line " << cubeLinesProj[i][0] << ", " << cubeLinesProj[i][1] << endl;
 	}
 	
 	for (int i = 0; i < 12; i++) {
 		drawLine(cubeLinesProj[i][0], cubeLinesProj[i][1]);
 	}
-//	cout << proj << endl;
 }
 
 
