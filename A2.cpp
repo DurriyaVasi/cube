@@ -311,9 +311,9 @@ void A2::drawCube()
 
 	for(int i = 0; i < 12; i++) {
 		vec4 point1 = proj * view * worldMat * modelScale * model * cubeLines[i][0];
-        	point1 = normalize(point1);
+        	point1 = normalize(point1 * (1/point1[3]));
       		vec4 point2 = proj * view * worldMat * modelScale * model * cubeLines[i][1];
-                point2 = normalize(point2);
+                point2 = normalize(point2 * (1/point2[3]));
 		cubeLinesProj[i][0] = vec2(point1[0], point1[1]);
 		cubeLinesProj[i][1] = vec2(point2[0], point2[1]);
 	}
@@ -335,9 +335,9 @@ void A2::drawCubeGnom() {
 
         for (int i = 0; i < 3; i++) {
                 vec4 point1 = proj * view * modelScale * model * lines[i][0];
-                point1 = normalize(point1);
+                point1 = normalize(point1 * (1/point1[3]));
                 vec4 point2 = proj * view * modelScale * model * lines[i][1];
-                point2 = normalize(point2);
+                point2 = normalize(point2 * (1/point2[3]));
                 linesProj[i][0] = vec2(point1[0], point1[1]);
                 linesProj[i][1] = vec2(point2[0], point2[1]);
         }
@@ -352,18 +352,18 @@ void A2::drawCubeGnom() {
 
 void A2::drawWorldGnom() {
 	vec4 lines[3][2] = {
-		{vec4(0.0f, 0.0f, 0.0f, 1.0f), vec4(0.25f, 0.0f, 0.0f, 1.0f)},
-		{vec4(0.0f, 0.0f, 0.0f, 1.0f), vec4(0.0f, 0.25f, 0.0f, 1.0f)},		
-		{vec4(0.0f, 0.0f, 0.0f, 1.0f), vec4(0.0f, 0.0f, 0.25f, 1.0f)},
+		{vec4(0.0f, 0.0f, 0.0f, 1.0f), vec4(0.5f, 0.0f, 0.0f, 1.0f)},
+		{vec4(0.0f, 0.0f, 0.0f, 1.0f), vec4(0.0f, 0.5f, 0.0f, 1.0f)},		
+		{vec4(0.0f, 0.0f, 0.0f, 1.0f), vec4(0.0f, 0.0f, 0.5f, 1.0f)},
 	};
 	
 	vec2 linesProj[3][2];
 	
 	for (int i = 0; i < 3; i++) {
 		vec4 point1 = proj * view * lines[i][0];
-		point1 = normalize(point1);
+		point1 = normalize(point1 * (1/point1[3]));
 		vec4 point2 = proj * view * lines[i][1];
-		point2 = normalize(point2);
+		point2 = normalize(point2 * (1/point2[3]));
                 linesProj[i][0] = vec2(point1[0], point1[1]);
                 linesProj[i][1] = vec2(point2[0], point2[1]);
 	}
