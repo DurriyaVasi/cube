@@ -25,7 +25,7 @@ VertexData::VertexData()
 //----------------------------------------------------------------------------------------
 // Constructor
 A2::A2()
-	: m_currentLineColour(vec3(0.0f)), worldMat(mat4(1.0f)), view(mat4(1.0f)), proj(mat4(1.0f)), model(mat4(1.0f)), modelScale(mat4(1.0f)), fovDegrees(60.0f), near(-2.0f), far(8.0f), aspect(1.0f), mouseLeftPressed(false), mouseRightPressed(false), mouseMiddlePressed(false), mode(0), oldX(0)
+	: m_currentLineColour(vec3(0.0f)), worldMat(mat4(1.0f)), view(mat4(1.0f)), proj(mat4(1.0f)), model(mat4(1.0f)), modelScale(mat4(1.0f)), fovDegrees(30.0f), near(0.0f), far(10.0f), aspect(1.0f), mouseLeftPressed(false), mouseRightPressed(false), mouseMiddlePressed(false), mode(0), oldX(0)
 {
 
 }
@@ -57,7 +57,8 @@ void A2::init()
 	mapVboDataToVertexAttributeLocation();
 
 	createProj(fovDegrees, near, far, aspect);
-	view = createViewMatrix(vec3(0.0f, 0.0f, 0.0f), vec3(-2.0f, -4.0f, -4.0f), vec3(0.0f, 1.0f, 0.0f) );
+//	view = translate(0, 0, -10);
+	view = createViewMatrix(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, -10.0f), vec3(0.0f, 1.0f, 0.0f) );
 }
 
 //----------------------------------------------------------------------------------------
@@ -315,15 +316,12 @@ bool A2::clipZ(vec4 &point1, vec4 &point2) {
                 point2[1] = newPoint[1];
                 point2[2] = newPoint[2];
                 return true;  
-	}   */
+	}   */ 
 }
 	
 		
 vec2 A2::drawProjection(vec4 point) {
-	point[0] = point[0]/point[3];
-	point[1] = point[1]/point[3];
-	point[2] = point[2]/point[3];
-	point[3] = point[3]/point[3];
+	point = normalize(point);
         return vec2(point[0], point[1]);
 }
 	
@@ -679,15 +677,15 @@ bool A2::mouseMoveEvent (
 			float angle = (float)(xDiff * 5);
                         if (mouseLeftPressed) {
                                 mat4 rot = rotate('x', angle);
-                                model = rot * model;
+                                model = model * rot;
                         }
                         if (mouseMiddlePressed) {
                                 mat4 rot = rotate('y', angle);
-                                model = rot * model;
+                                model = model * rot;
                         }
                         if (mouseRightPressed) {
                                 mat4 rot = rotate('z', angle);
-                                model = rot * model;
+                                model = model * rot;
                         }
                         eventHandled = true;
 		}
@@ -695,15 +693,15 @@ bool A2::mouseMoveEvent (
 			float amount = (float) (xDiff);
                         if (mouseLeftPressed) {
                                 mat4 trans = translate(amount, 0.0f, 0.0f);
-                                model = trans * model;
+                                model = model * trans;
                         }
                         if (mouseMiddlePressed) {
                                 mat4 trans = translate(0.0f, amount, 0.0f);
-                                model = trans * model;
+                                model = model * trans;
                         }
                         if (mouseRightPressed) {
                                 mat4 trans = translate(0.0f, 0.0f, amount);
-                                model = trans * model;
+                                model = model * trans;
                         }
                         eventHandled = true;
                 }
