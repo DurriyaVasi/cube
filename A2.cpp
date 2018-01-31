@@ -392,8 +392,8 @@ void A2::drawCube()
 	bool keepLine[12];
 
 	for(int i = 0; i < 12; i++) {
-		vec4 point1 = view * worldMat * modelScale * model * cubeLines[i][0];
-      		vec4 point2 = view * worldMat * modelScale * model * cubeLines[i][1];
+		vec4 point1 = view * worldMat * model * modelScale * cubeLines[i][0];
+      		vec4 point2 = view * worldMat * model * modelScale * cubeLines[i][1];
 		keepLine[i] = clipZ(point1, point2);
 		point1 = proj * point1;
 		point2 = proj * point2;
@@ -419,8 +419,8 @@ void A2::drawCubeGnom() {
         vec2 linesProj[3][2];
 
         for (int i = 0; i < 3; i++) {
-                vec4 point1 = proj * view * modelScale * model * lines[i][0];
-                vec4 point2 = proj * view * modelScale * model * lines[i][1];
+                vec4 point1 = proj * view * model * lines[i][0];
+                vec4 point2 = proj * view * model * lines[i][1];
                 linesProj[i][0] = drawProjection(point1);
                 linesProj[i][1] = drawProjection(point2);
         }
@@ -703,18 +703,26 @@ bool A2::mouseMoveEvent (
                         eventHandled = true;
                 }
 		else if (mode == 5) {
-			float amount = ((float)xDiff)/8.0f;
+			float amount = ((float)xDiff)/20;
+			if (amount < 0.00f) {
+				amount = amount - 1.0f;
+				amount = amount * (-1.0f);
+				amount = 1.0f / amount;
+			}
+			else if (amount > 0.00f) {
+				amount = amount + 1.0f;
+			}
 			if (mouseLeftPressed) {
 				mat4 sc = scale(amount, 1.0f, 1.0f);
-				modelScale = sc * modelScale;
+				modelScale = modelScale * sc;
 			}
 			if (mouseMiddlePressed) {
 				mat4 sc = scale(1.0f, amount, 1.0f);
-				modelScale = sc * modelScale;
+				modelScale = modelScale * sc;
 			}
 			if (mouseRightPressed) {
 				mat4 sc = scale(1.0f, 1.0f, amount);
-				modelScale = sc * modelScale;
+				modelScale = modelScale * sc;
 			}
 			eventHandled = true;
 		}
