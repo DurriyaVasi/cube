@@ -242,6 +242,62 @@ mat4 A2::scale(float xScale, float yScale, float zScale) {
 	return sc;
 }		
 
+bool A2::clipZ(vec4 &point1, vec4 &point2) {
+	bool point1In;
+	bool point2In;
+	if ((point1[3] < near) || (point1[3] > far)) {
+		point1In = false;
+	}
+	if ((point2[3] < near) || (point2[3] > far)) {
+		point2In = false;
+	}
+	if (point1In && point2In) {
+		return true;
+	}
+	else if (!point1In && point2In) {
+		return false;
+	}
+	else if (!point1In) {
+		vec3 normal;
+		vec3 P;
+		if (point1[3] < near) {
+			normal = vec3(0, 0, 1);
+			P = vec3(0, 0, near);
+		}
+		else if (point1[3] > far) {
+			normal = vec3(0, 0, -1);
+			P = vec3(0, 0, near);
+		}
+		float t = (dot( (vec3(point1) - P), normal)) / (dot( (vec3(point1) - vec3(point2)), normal));
+		vec3 newPoint = vec3(point1) + (t * (vec3(point2) - vec3(point1) ) );
+		point1[0] = newPoint[0];
+		point1[1] = newPoint[1];
+		point1[2] = newPoint[2];
+		return true;			
+	}
+	else if (!point2In) {
+		vec3 normal;
+		vec3 P;
+		if (point2[3] < near) { 
+                        normal = vec3(0, 0, 1);
+                        P = vec3(0, 0, near);
+                }
+                else if (point2[3] > far) {
+                        normal = vec3(0, 0, -1); 
+                        P = vec3(0, 0, near);
+                }
+                float t = (dot( (vec3(point2) - P), normal)) / (dot( (vec3(point2) - vec3(point1)), normal));
+                vec3 newPoint = vec3(point2) + (t * (vec3(point2) - vec3(point1) ) );
+                point2[0] = newPoint[0];
+                point2[1] = newPoint[1];
+                point2[2] = newPoint[2];
+                return true;  
+	}   
+}
+	
+		
+		
+
 void A2::drawCube()
 {
 	vec4 line1a(1.0f, 1.0f, 1.0f, 1.0f);

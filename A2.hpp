@@ -80,6 +80,8 @@ private:
 	glm::mat4 rotate(char axis, float degrees);
 	glm::mat4 scale(float xScale, float yScale, float zScale);
 
+	bool clipZ(glm::vec4 &point1, glm::vec4 &point2);
+
 	glm::vec2 orthographicProjection(glm::vec4 point);
 	glm::vec2 projection(glm::vec4 point);
 
