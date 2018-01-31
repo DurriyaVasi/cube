@@ -243,13 +243,13 @@ mat4 A2::rotate(char axis, float degrees) {
 		rot[2][1] = -1 * sin(radians(degrees));
 		rot[2][2] = cos(radians(degrees));
 	}
-	if (axis == 'y') {
+	else if (axis == 'y') {
 		rot[0][0] = cos(radians(degrees));
 		rot[2][0] = sin(radians(degrees));
 		rot[0][2] = -1 * sin(radians(degrees));
 		rot[2][2] = cos(radians(degrees));
 	}
-	if (axis == 'z') {
+	else if (axis == 'z') {
 		rot[0][0] = cos(radians(degrees));
 		rot[1][0] = -1 * sin(radians(degrees));
 		rot[0][1] = sin(radians(degrees));
@@ -620,7 +620,7 @@ bool A2::mouseMoveEvent (
 
 	if (!ImGui::IsMouseHoveringAnyWindow()) {
 		if (mode == 0) {
-			float angle = (float)(xDiff * 5 * -1); //inverse so -1
+			float angle = (float)(xDiff -1); //inverse so -1
 			if (mouseLeftPressed) {
 				mat4 rot = rotate('x', angle);
 				view = rot * view;
@@ -636,7 +636,7 @@ bool A2::mouseMoveEvent (
 			eventHandled = true;
 		}
 		else if (mode == 1) {
-			float amount = (float) (xDiff * -1); // inverse so -1
+			float amount = ((float) (xDiff * -1))/5.0f; // inverse so -1
 			if (mouseLeftPressed) {
 				mat4 trans = translate(amount, 0.0f, 0.0f);
 				view = trans * view;
@@ -652,8 +652,8 @@ bool A2::mouseMoveEvent (
 			eventHandled = true;
 		}
 		else if (mode == 2) {
-			float angle = (float)(xDiff * 5);
-			float amount = (float) (xDiff);
+			float angle = (float)(xDiff);
+			float amount = ((float) (xDiff))/5.0f;
 			if (mouseLeftPressed) {
 				fovDegrees = fovDegrees + angle;
 				if (fovDegrees > 160) {
@@ -675,7 +675,7 @@ bool A2::mouseMoveEvent (
 			eventHandled = true;
 		}
 		else if (mode == 3) {
-			float angle = (float)(xDiff * 5);
+			float angle = (float)(xDiff);
                         if (mouseLeftPressed) {
                                 mat4 rot = rotate('x', angle);
                                 model = model * rot;
@@ -691,7 +691,7 @@ bool A2::mouseMoveEvent (
                         eventHandled = true;
 		}
 		else if (mode == 4) {
-			float amount = (float) (xDiff);
+			float amount = ((float) (xDiff))/5.0f;
                         if (mouseLeftPressed) {
                                 mat4 trans = translate(amount, 0.0f, 0.0f);
                                 model = model * trans;
