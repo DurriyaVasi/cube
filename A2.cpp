@@ -309,16 +309,71 @@ void A2::drawCube()
 
 	vec2 cubeLinesProj[12][2];
 
-	setLineColour(vec3(0.0f, 0.0f, 0.0f));
-
 	for(int i = 0; i < 12; i++) {
-		cubeLinesProj[i][0] = projection(cubeLines[i][0]);
-		cubeLinesProj[i][1] = projection(cubeLines[i][1]);
+		vec4 point1 = proj * view * worldMat * modelScale * model * cubeLines[i][0];
+        	point1 = normalize(point1);
+      		vec4 point2 = proj * view * worldMat * modelScale * model * cubeLines[i][1];
+                point2 = normalize(point2);
+		cubeLinesProj[i][0] = vec2(point1[0], point1[1]);
+		cubeLinesProj[i][1] = vec2(point2[0], point2[1]);
 	}
 	
+	setLineColour(vec3(0.0f, 0.0f, 0.0f));
 	for (int i = 0; i < 12; i++) {
 		drawLine(cubeLinesProj[i][0], cubeLinesProj[i][1]);
 	}
+}
+
+void A2::drawCubeGnom() {
+	vec4 lines[3][2] = {
+                {vec4(0.0f, 0.0f, 0.0f, 1.0f), vec4(0.25f, 0.0f, 0.0f, 1.0f)},
+                {vec4(0.0f, 0.0f, 0.0f, 1.0f), vec4(0.0f, 0.25f, 0.0f, 1.0f)},
+                {vec4(0.0f, 0.0f, 0.0f, 1.0f), vec4(0.0f, 0.0f, 0.25f, 1.0f)},
+        };
+
+        vec2 linesProj[3][2];
+
+        for (int i = 0; i < 3; i++) {
+                vec4 point1 = proj * view * modelScale * model * lines[i][0];
+                point1 = normalize(point1);
+                vec4 point2 = proj * view * modelScale * model * lines[i][1];
+                point2 = normalize(point2);
+                linesProj[i][0] = vec2(point1[0], point1[1]);
+                linesProj[i][1] = vec2(point2[0], point2[1]);
+        }
+
+        setLineColour(vec3(1.0f, 1.0f, 0.0f));
+        drawLine(linesProj[0][0], linesProj[0][1]);
+        setLineColour(vec3(1.0f, 0.0f, 1.0f));
+        drawLine(linesProj[1][0], linesProj[1][1]);
+        setLineColour(vec3(0.0f, 1.0f, 1.0f));
+        drawLine(linesProj[2][0], linesProj[2][1]);
+}
+
+void A2::drawWorldGnom() {
+	vec4 lines[3][2] = {
+		{vec4(0.0f, 0.0f, 0.0f, 1.0f), vec4(0.25f, 0.0f, 0.0f, 1.0f)},
+		{vec4(0.0f, 0.0f, 0.0f, 1.0f), vec4(0.0f, 0.25f, 0.0f, 1.0f)},		
+		{vec4(0.0f, 0.0f, 0.0f, 1.0f), vec4(0.0f, 0.0f, 0.25f, 1.0f)},
+	};
+	
+	vec2 linesProj[3][2];
+	
+	for (int i = 0; i < 3; i++) {
+		vec4 point1 = proj * view * lines[i][0];
+		point1 = normalize(point1);
+		vec4 point2 = proj * view * lines[i][1];
+		point2 = normalize(point2);
+                linesProj[i][0] = vec2(point1[0], point1[1]);
+                linesProj[i][1] = vec2(point2[0], point2[1]);
+	}
+
+	setLineColour(vec3(1.0f, 0.0f, 0.0f));
+	drawLine(linesProj[0][0], linesProj[0][1]);
+	setLineColour(vec3(0.0f, 1.0f, 0.0f));
+	drawLine(linesProj[1][0], linesProj[1][1]);
+	setLineColour(vec3(0.0f, 0.0f, 1.0f));  
+        drawLine(linesProj[2][0], linesProj[2][1]);	
 }
 
 
@@ -349,6 +404,8 @@ void A2::appLogic()
 	drawLine(vec2(-0.25f, 0.25f), vec2(-0.25f, -0.25f));*/
 
 	drawCube();
+	drawWorldGnom();
+	drawCubeGnom();
 }
 
 //----------------------------------------------------------------------------------------
@@ -523,10 +580,12 @@ bool A2::mouseMoveEvent (
 				createProj(fovDegrees, near, far, aspect);
 			}
 			if (mouseMiddlePressed) {
-				createProj(fovDegrees, near + amount, far, aspect);
+				near = near + amount;
+				createProj(fovDegrees, near, far, aspect);
 			}
 			if (mouseRightPressed) {
-				createProj(fovDegrees, near, far + amount, aspect);
+				far = far + amount;
+				createProj(fovDegrees, near, far, aspect);
 			}
 			eventHandled = true;
 		}
@@ -565,15 +624,15 @@ bool A2::mouseMoveEvent (
 		else if (mode == 5) {
 			float amount = ((float)xDiff)/8.0f;
 			if (mouseLeftPressed) {
-				mat4 sc = scale(amount, 0.0f, 0.0f);
+				mat4 sc = scale(amount, 1.0f, 1.0f);
 				modelScale = sc * modelScale;
 			}
 			if (mouseMiddlePressed) {
-				mat4 sc = scale(0.0f, amount, 0.0f);
+				mat4 sc = scale(1.0f, amount, 1.0f);
 				modelScale = sc * modelScale;
 			}
 			if (mouseRightPressed) {
-				mat4 sc = scale(0.0f, 0.0f, amount);
+				mat4 sc = scale(1.0f, 1.0f, amount);
 				modelScale = sc * modelScale;
 			}
 			eventHandled = true;

@@ -71,6 +71,8 @@ protected:
 	glm::vec3 m_currentLineColour;
 private:
         void drawCube();
+	void drawWorldGnom();
+	void drawCubeGnom();
 	
 	void createProj(float fovDegrees, float near, float far, float aspect);
 
