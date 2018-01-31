@@ -319,7 +319,15 @@ bool A2::clipZ(vec4 &point1, vec4 &point2) {
 }
 	
 		
-		
+vec2 A2::drawProjection(vec4 point) {
+	point[0] = point[0]/point[3];
+	point[1] = point[1]/point[3];
+	point[2] = point[2]/point[3];
+	point[3] = point[3]/point[3];
+        return vec2(point[0], point[1]);
+}
+	
+			
 
 void A2::drawCube()
 {
@@ -395,11 +403,9 @@ void A2::drawCube()
       		vec4 point2 = view * worldMat * modelScale * model * cubeLines[i][1];
 		keepLine[i] = clipZ(point1, point2);
 		point1 = proj * point1;
-		point2 = proj * point2;	
-                point1 = normalize(point1 * (1/point1[3]));
-		point2 = normalize(point2 * (1/point2[3]));
-		cubeLinesProj[i][0] = vec2(point1[0], point1[1]);
-		cubeLinesProj[i][1] = vec2(point2[0], point2[1]);
+		point2 = proj * point2;
+		cubeLinesProj[i][0] = drawProjection(point1);
+		cubeLinesProj[i][1] = drawProjection(point2);
 	}
 	
 	setLineColour(vec3(0.0f, 0.0f, 0.0f));
@@ -419,11 +425,9 @@ void A2::drawCubeGnom() {
 
         for (int i = 0; i < 3; i++) {
                 vec4 point1 = proj * view * modelScale * model * lines[i][0];
-                point1 = normalize(point1 * (1/point1[3]));
                 vec4 point2 = proj * view * modelScale * model * lines[i][1];
-                point2 = normalize(point2 * (1/point2[3]));
-                linesProj[i][0] = vec2(point1[0], point1[1]);
-                linesProj[i][1] = vec2(point2[0], point2[1]);
+                linesProj[i][0] = drawProjection(point1);
+                linesProj[i][1] = drawProjection(point2);
         }
 
         setLineColour(vec3(1.0f, 1.0f, 0.0f));
@@ -445,11 +449,9 @@ void A2::drawWorldGnom() {
 	
 	for (int i = 0; i < 3; i++) {
 		vec4 point1 = proj * view * lines[i][0];
-		point1 = normalize(point1 * (1/point1[3]));
 		vec4 point2 = proj * view * lines[i][1];
-		point2 = normalize(point2 * (1/point2[3]));
-                linesProj[i][0] = vec2(point1[0], point1[1]);
-                linesProj[i][1] = vec2(point2[0], point2[1]);
+                linesProj[i][0] = drawProjection(point1);
+                linesProj[i][1] = drawProjection(point2);
 	}
 
 	setLineColour(vec3(1.0f, 0.0f, 0.0f));

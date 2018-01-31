@@ -70,6 +70,8 @@ protected:
 
 	glm::vec3 m_currentLineColour;
 private:
+	glm::vec2 drawProjection(glm::vec4 point);
+	
         void drawCube();
 	void drawWorldGnom();
 	void drawCubeGnom();
