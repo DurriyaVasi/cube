@@ -25,7 +25,7 @@ VertexData::VertexData()
 //----------------------------------------------------------------------------------------
 // Constructor
 A2::A2()
-	: m_currentLineColour(vec3(0.0f)), worldMat(mat4(1.0f)), view(mat4(1.0f)), proj(mat4(1.0f)), model(mat4(1.0f)), modelScale(mat4(1.0f)), fovDegrees(60.0f), near(2.0f), far(8.0f), aspect(1.0f), mouseLeftPressed(false), mouseRightPressed(false), mouseMiddlePressed(false), mode(0), oldX(0)
+	: m_currentLineColour(vec3(0.0f)), worldMat(mat4(1.0f)), view(mat4(1.0f)), proj(mat4(1.0f)), model(mat4(1.0f)), modelScale(mat4(1.0f)), fovDegrees(60.0f), near(-2.0f), far(8.0f), aspect(1.0f), mouseLeftPressed(false), mouseRightPressed(false), mouseMiddlePressed(false), mode(0), oldX(0)
 {
 
 }
@@ -57,7 +57,7 @@ void A2::init()
 	mapVboDataToVertexAttributeLocation();
 
 	createProj(fovDegrees, near, far, aspect);
-	view = createViewMatrix(vec3(0.0f, 0.0f, 0.0f), vec3(-2.0f, -4.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f) );
+	view = createViewMatrix(vec3(0.0f, 0.0f, 0.0f), vec3(-2.0f, -4.0f, -4.0f), vec3(0.0f, 1.0f, 0.0f) );
 }
 
 //----------------------------------------------------------------------------------------
@@ -194,11 +194,11 @@ mat4 A2::createViewMatrix(vec3 lookAt, vec3 lookFrom, vec3 up) {
 	t[3][1] = lookFrom[1] * (-1);
 	t[3][2] = lookFrom[2] * (-1);
 
-	cout << "vx " << vx << endl;
-	cout << "vy " << vy << endl;
-	cout << "vz " << vz << endl;
-	cout << r << endl;
-	cout << t << endl;
+	//cout << "vx " << vx << endl;
+	//cout << "vy " << vy << endl;
+	//cout << "vz " << vz << endl;
+	//cout << r << endl;
+	//cout << t << endl;
 
 	return (r * t);
 }			
@@ -265,7 +265,8 @@ mat4 A2::scale(float xScale, float yScale, float zScale) {
 }		
 
 bool A2::clipZ(vec4 &point1, vec4 &point2) {
-	bool point1In;
+	return true;
+/*	bool point1In;
 	bool point2In;
 	if ((point1[3] < near) || (point1[3] > far)) {
 		point1In = false;
@@ -276,7 +277,7 @@ bool A2::clipZ(vec4 &point1, vec4 &point2) {
 	if (point1In && point2In) {
 		return true;
 	}
-	else if (!point1In && point2In) {
+	else if (!point1In && !point2In) {
 		return false;
 	}
 	else if (!point1In) {
@@ -314,7 +315,7 @@ bool A2::clipZ(vec4 &point1, vec4 &point2) {
                 point2[1] = newPoint[1];
                 point2[2] = newPoint[2];
                 return true;  
-	}   
+	}   */
 }
 	
 		
@@ -387,11 +388,16 @@ void A2::drawCube()
 
 	vec2 cubeLinesProj[12][2];
 
+	bool keepLine[12];
+
 	for(int i = 0; i < 12; i++) {
-		vec4 point1 = proj * view * worldMat * modelScale * model * cubeLines[i][0];
-        	point1 = normalize(point1 * (1/point1[3]));
-      		vec4 point2 = proj * view * worldMat * modelScale * model * cubeLines[i][1];
-                point2 = normalize(point2 * (1/point2[3]));
+		vec4 point1 = view * worldMat * modelScale * model * cubeLines[i][0];
+      		vec4 point2 = view * worldMat * modelScale * model * cubeLines[i][1];
+		keepLine[i] = clipZ(point1, point2);
+		point1 = proj * point1;
+		point2 = proj * point2;	
+                point1 = normalize(point1 * (1/point1[3]));
+		point2 = normalize(point2 * (1/point2[3]));
 		cubeLinesProj[i][0] = vec2(point1[0], point1[1]);
 		cubeLinesProj[i][1] = vec2(point2[0], point2[1]);
 	}
