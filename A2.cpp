@@ -25,7 +25,7 @@ VertexData::VertexData()
 //----------------------------------------------------------------------------------------
 // Constructor
 A2::A2()
-	: m_currentLineColour(vec3(0.0f)), worldMat(mat4(1.0f)), view(mat4(1.0f)), proj(mat4(1.0f)), model(mat4(1.0f)), modelScale(mat4(1.0f)), fovDegrees(30.0f), near(0.0f), far(10.0f), aspect(1.0f), mouseLeftPressed(false), mouseRightPressed(false), mouseMiddlePressed(false), mode(0), oldX(0)
+	: m_currentLineColour(vec3(0.0f)), worldMat(mat4(1.0f)), view(mat4(1.0f)), proj(mat4(1.0f)), model(mat4(1.0f)), modelScale(mat4(1.0f)), fovDegrees(30.0f), near(0.0f), far(20.0f), aspect(1.0f), mouseLeftPressed(false), mouseRightPressed(false), mouseMiddlePressed(false), mode(0), oldX(0)
 {
 
 }
@@ -196,12 +196,6 @@ mat4 A2::createViewMatrix(vec3 lookAt, vec3 lookFrom, vec3 up) {
 	t[3][1] = lookFrom[1] * (-1);
 	t[3][2] = lookFrom[2] * (-1);
 
-	//cout << "vx " << vx << endl;
-	//cout << "vy " << vy << endl;
-	//cout << "vz " << vz << endl;
-	//cout << r << endl;
-	//cout << t << endl;
-
 	return (r * t);
 }			
 
@@ -268,12 +262,12 @@ mat4 A2::scale(float xScale, float yScale, float zScale) {
 
 bool A2::clipZ(vec4 &point1, vec4 &point2) {
 	return true;
-/*	bool point1In;
-	bool point2In;
-	if ((point1[3] < near) || (point1[3] > far)) {
+	bool point1In = true;
+	bool point2In = true;
+	if ((point1[2] < near) || (point1[2] > far)) {
 		point1In = false;
 	}
-	if ((point2[3] < near) || (point2[3] > far)) {
+	if ((point2[2] < near) || (point2[2] > far)) {
 		point2In = false;
 	}
 	if (point1In && point2In) {
@@ -285,11 +279,11 @@ bool A2::clipZ(vec4 &point1, vec4 &point2) {
 	else if (!point1In) {
 		vec3 normal;
 		vec3 P;
-		if (point1[3] < near) {
+		if (point1[2] < near) {
 			normal = vec3(0, 0, 1);
 			P = vec3(0, 0, near);
 		}
-		else if (point1[3] > far) {
+		else if (point1[2] > far) {
 			normal = vec3(0, 0, -1);
 			P = vec3(0, 0, near);
 		}
@@ -303,11 +297,11 @@ bool A2::clipZ(vec4 &point1, vec4 &point2) {
 	else if (!point2In) {
 		vec3 normal;
 		vec3 P;
-		if (point2[3] < near) { 
+		if (point2[2] < near) { 
                         normal = vec3(0, 0, 1);
                         P = vec3(0, 0, near);
                 }
-                else if (point2[3] > far) {
+                else if (point2[2] > far) {
                         normal = vec3(0, 0, -1); 
                         P = vec3(0, 0, near);
                 }
@@ -317,7 +311,7 @@ bool A2::clipZ(vec4 &point1, vec4 &point2) {
                 point2[1] = newPoint[1];
                 point2[2] = newPoint[2];
                 return true;  
-	}   */ 
+	} 
 }
 	
 		
@@ -409,7 +403,9 @@ void A2::drawCube()
 	
 	setLineColour(vec3(0.0f, 0.0f, 0.0f));
 	for (int i = 0; i < 12; i++) {
-		drawLine(cubeLinesProj[i][0], cubeLinesProj[i][1]);
+		if (keepLine[i]) {
+			drawLine(cubeLinesProj[i][0], cubeLinesProj[i][1]);
+		}
 	}
 }
 
