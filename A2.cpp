@@ -190,6 +190,7 @@ mat4 A2::createViewMatrix(vec3 lookAt, vec3 lookFrom, vec3 up) {
 	r[0][0] = vx[0]; r[1][0] = vx[1]; r[2][0] = vx[2];
 	r[0][1] = vy[0]; r[1][1] = vy[1]; r[2][1] = vy[2];
 	r[0][2] = vz[0]; r[1][2] = vz[1]; r[2][2] = vz[2];
+	r[3][3] = 1;
 	mat4 t(1.0f);
 	t[3][0] = lookFrom[0] * (-1);
 	t[3][1] = lookFrom[1] * (-1);
