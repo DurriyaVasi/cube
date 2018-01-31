@@ -73,7 +73,8 @@ private:
         void drawCube();
 	void drawWorldGnom();
 	void drawCubeGnom();
-	
+
+	glm::mat4 createViewMatrix(glm::vec3 lookAt, glm::vec3 lookFrom, glm::vec3 up);	
 	void createProj(float fovDegrees, float near, float far, float aspect);
 
 	glm::mat4 translate(float xDiff, float yDiff, float zDiff);

@@ -25,7 +25,7 @@ VertexData::VertexData()
 //----------------------------------------------------------------------------------------
 // Constructor
 A2::A2()
-	: m_currentLineColour(vec3(0.0f)), worldMat(mat4(1.0f)), view(mat4(1.0f)), proj(mat4(1.0f)), model(mat4(1.0f)), modelScale(mat4(1.0f)), fovDegrees(60.0f), near(2.0f), far(20.0f), aspect(1.0f), mouseLeftPressed(false), mouseRightPressed(false), mouseMiddlePressed(false), mode(0), oldX(0)
+	: m_currentLineColour(vec3(0.0f)), worldMat(mat4(1.0f)), view(mat4(1.0f)), proj(mat4(1.0f)), model(mat4(1.0f)), modelScale(mat4(1.0f)), fovDegrees(60.0f), near(2.0f), far(8.0f), aspect(1.0f), mouseLeftPressed(false), mouseRightPressed(false), mouseMiddlePressed(false), mode(0), oldX(0)
 {
 
 }
@@ -57,7 +57,7 @@ void A2::init()
 	mapVboDataToVertexAttributeLocation();
 
 	createProj(fovDegrees, near, far, aspect);
-	view = translate(0.0f, 0.0f, -5.0f);
+	view = createViewMatrix(vec3(0.0f, 0.0f, 0.0f), vec3(-2.0f, -4.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f) );
 }
 
 //----------------------------------------------------------------------------------------
@@ -180,6 +180,28 @@ void A2::drawLine(
 
 	m_vertexData.numVertices += 2;
 }
+
+mat4 A2::createViewMatrix(vec3 lookAt, vec3 lookFrom, vec3 up) {
+	vec3 vz = normalize(lookAt - lookFrom);
+	vec3 vx = normalize(cross(up, vz));
+	vec3 vy = cross(vz, vx);
+	mat4 r(0.0f);
+	r[0][0] = vx[0]; r[1][0] = vx[1]; r[2][0] = vx[2];
+	r[0][1] = vy[0]; r[1][1] = vy[1]; r[2][1] = vy[2];
+	r[0][2] = vz[0]; r[1][2] = vz[1]; r[2][2] = vz[2];
+	mat4 t(1.0f);
+	t[3][0] = lookFrom[0] * (-1);
+	t[3][1] = lookFrom[1] * (-1);
+	t[3][2] = lookFrom[2] * (-1);
+
+	cout << "vx " << vx << endl;
+	cout << "vy " << vy << endl;
+	cout << "vz " << vz << endl;
+	cout << r << endl;
+	cout << t << endl;
+
+	return (r * t);
+}			
 
 void A2::createProj(float fovDegrees, float near, float far, float aspect) {
 	proj = mat4(0.0f);
