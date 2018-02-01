@@ -344,29 +344,29 @@ float findXOnLine(float slope, vec2 point, float y) {
 }
 	
 bool A2::clipXY(vec2 &point1, vec2 &point2) {
-	bool point1In = true;
-	bool point2In = true;
-	if ((point1[0] < lowXBoundary) || 
-	    (point1[0] > highXBoundary) || 
-	    (point1[1] < lowYBoundary) || 
-	    (point1[1] > highYBoundary)) {
-		point1In = false;
-	}
-	if ((point2[0] < lowXBoundary) || 
-	    (point2[0] > highXBoundary) || 
-	    (point2[1] < lowYBoundary) || 
-	    (point2[1] > highYBoundary)) {
-                point2In = false;
-        }
-	if (point1In && point2In) {
-		return true;
-	}
-	else if ((!point1In) && (!point2In)) {
+	bool point1LowX = !(point1[0] < lowXBoundary);
+	bool point1HighX = !(point1[0] > highXBoundary);
+	bool point1LowY = !(point1[1] < lowYBoundary); 
+	bool point1HighY = !(point1[1] > highYBoundary);
+	bool point2LowX = !(point2[0] < lowXBoundary);
+        bool point2HighX = !(point2[0] > highXBoundary);
+        bool point2LowY = !(point2[1] < lowYBoundary);
+        bool point2HighY = !(point2[1] > highYBoundary);
+
+	if (!((point1LowX || point2LowX) 
+              && (point1HighX || point2HighX) 
+              && (point1LowY || point2LowY) 
+	      && (point1HighY || point2HighY))) {
 		return false;
 	}
+	else if ((point1LowX && point2LowX)
+            && (point1HighX && point2HighX)
+            && (point1LowY && point2LowY)
+            && (point1HighY && point2HighY)) {
+		return true;
+	}	  
 	else {
 		float slope = (point2[1] - point1[1]) / (point2[0] - point1[0]);
-		if (!point1In) {
 			if (point1[0] < lowXBoundary) {
 				float y = findYOnLine(slope, point2, lowXBoundary);
 				bool goodPoint = true;
@@ -376,7 +376,6 @@ bool A2::clipXY(vec2 &point1, vec2 &point2) {
 				if (goodPoint) {
 					point1[0] = lowXBoundary;
 					point1[1] = y;
-					return true;
 				}
 			}
 			if (point1[1] < lowYBoundary) {
@@ -388,7 +387,6 @@ bool A2::clipXY(vec2 &point1, vec2 &point2) {
 				if (goodPoint) {
 					point1[0] = x;
 					point1[1] = lowYBoundary;
-					return true;
 				}
 			}
 			if (point1[0] > highXBoundary) {
@@ -400,7 +398,6 @@ bool A2::clipXY(vec2 &point1, vec2 &point2) {
                                 if (goodPoint) {
                                         point1[0] = highXBoundary;
                                         point1[1] = y;
-                                        return true;
                                 }
 			}
 			if (point1[1] > highYBoundary) {
@@ -412,11 +409,8 @@ bool A2::clipXY(vec2 &point1, vec2 &point2) {
                                 if (goodPoint) {
                                         point1[0] = x;
                                         point1[1] = highYBoundary;
-                                        return true;
                                 }
                         }		 
-		}
-		else if (!point2In) {
 			if (point2[0] < lowXBoundary) {
                                 float y = findYOnLine(slope, point2, lowXBoundary);
                                 bool goodPoint = true;
@@ -426,7 +420,6 @@ bool A2::clipXY(vec2 &point1, vec2 &point2) {
                                 if (goodPoint) {
                                         point2[0] = lowXBoundary;
                                         point2[1] = y;
-                                        return true;
                                 }
                         }
                         if (point2[1] < lowYBoundary) {
@@ -438,7 +431,6 @@ bool A2::clipXY(vec2 &point1, vec2 &point2) {
                                 if (goodPoint) {
                                         point2[0] = x;
                                         point2[1] = lowYBoundary;
-                                        return true;
                                 }
                         }
 			if (point2[0] > highXBoundary) {
@@ -450,7 +442,6 @@ bool A2::clipXY(vec2 &point1, vec2 &point2) {
                                 if (goodPoint) {
                                         point2[0] = highXBoundary;
                                         point2[1] = y;
-                                        return true;
                                 }
                         }
                         if (point2[1] > highYBoundary) {
@@ -462,10 +453,9 @@ bool A2::clipXY(vec2 &point1, vec2 &point2) {
                                 if (goodPoint) {
                                         point2[0] = x;
                                         point2[1] = highYBoundary;
-                                        return true;
                                 }
                         }
-		}
+		return true;
 	}
 }	
 		
