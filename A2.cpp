@@ -352,30 +352,16 @@ bool A2::clipXY(vec2 &point1, vec2 &point2) {
 	    (point1[1] > highYBoundary)) {
 		point1In = false;
 	}
-
-	cout << (point1[0] < lowXBoundary) << (point1[0] > highXBoundary)<< (point1[0] < lowYBoundary) << (point1[0] < lowXBoundary) << endl;
-	cout << ((point1[0] < lowXBoundary) ||
-            (point1[0] > highXBoundary) ||
-            (point1[1] < lowYBoundary) ||
-            (point1[1] > highYBoundary)) << endl;
-
-
 	if ((point2[0] < lowXBoundary) || 
 	    (point2[0] > highXBoundary) || 
 	    (point2[1] < lowYBoundary) || 
 	    (point2[1] > highYBoundary)) {
                 point2In = false;
         }
-
-
-	cout << ((!point1In) && (!point2In)) << endl;
-
-
 	if (point1In && point2In) {
 		return true;
 	}
 	else if ((!point1In) && (!point2In)) {
-		cout << "here" << endl;
 		return false;
 	}
 	else {
@@ -456,9 +442,7 @@ bool A2::clipXY(vec2 &point1, vec2 &point2) {
                                 }
                         }
 			if (point2[0] > highXBoundary) {
-				cout << "Here";
                                 float y = findYOnLine(slope, point2, highXBoundary);
-				cout << "y" << y << endl;
                                 bool goodPoint = true;
                                 if (y < lowYBoundary || y > highYBoundary) {
                                         goodPoint = false;
@@ -574,7 +558,6 @@ void A2::drawCube()
 	
 	setLineColour(vec3(0.0f, 0.0f, 0.0f));
 	for (int i = 0; i < 12; i++) {
-		cout << cubeLinesProj[i][0] << cubeLinesProj[i][1] << clipXY(cubeLinesProj[i][0], cubeLinesProj[i][1]) << endl;
 		if (keepLine[i] && clipXY(cubeLinesProj[i][0], cubeLinesProj[i][1])) {
 			drawLine(cubeLinesProj[i][0], cubeLinesProj[i][1]);
 		}
@@ -598,11 +581,17 @@ void A2::drawCubeGnom() {
         }
 
         setLineColour(vec3(1.0f, 1.0f, 0.0f));
-        drawLine(linesProj[0][0], linesProj[0][1]);
+	if (clipXY(linesProj[0][0], linesProj[0][1])) {
+        	drawLine(linesProj[0][0], linesProj[0][1]);
+	}
         setLineColour(vec3(1.0f, 0.0f, 1.0f));
-        drawLine(linesProj[1][0], linesProj[1][1]);
+	if (clipXY(linesProj[1][0], linesProj[1][1])) {
+        	drawLine(linesProj[1][0], linesProj[1][1]);
+	}
         setLineColour(vec3(0.0f, 1.0f, 1.0f));
-        drawLine(linesProj[2][0], linesProj[2][1]);
+	if (clipXY(linesProj[2][0], linesProj[2][1])) {
+        	drawLine(linesProj[2][0], linesProj[2][1]);
+	}
 }
 
 void A2::drawWorldGnom() {
@@ -622,11 +611,17 @@ void A2::drawWorldGnom() {
 	}
 
 	setLineColour(vec3(1.0f, 0.0f, 0.0f));
-	drawLine(linesProj[0][0], linesProj[0][1]);
+	if (clipXY(linesProj[0][0], linesProj[0][1])) {
+		drawLine(linesProj[0][0], linesProj[0][1]);
+	}
 	setLineColour(vec3(0.0f, 1.0f, 0.0f));
-	drawLine(linesProj[1][0], linesProj[1][1]);
-	setLineColour(vec3(0.0f, 0.0f, 1.0f));  
-        drawLine(linesProj[2][0], linesProj[2][1]);	
+	if (clipXY(linesProj[1][0], linesProj[1][1])) {
+		drawLine(linesProj[1][0], linesProj[1][1]);
+	}
+	setLineColour(vec3(0.0f, 0.0f, 1.0f)); 
+	if (clipXY(linesProj[2][0], linesProj[2][1])) {
+ 		drawLine(linesProj[2][0], linesProj[2][1]);
+	}	
 }
 
 
@@ -669,11 +664,6 @@ void A2::appLogic()
 	drawLine(vec2(-0.25f, 0.25f), vec2(-0.25f, -0.25f));*/
 
 	drawViewport();
-
-	vec2 a(0.763, -0.573);
-	vec2 b(0.947, -0.284);
-//	cout << "true" << true << "false" << false << endl;
-//	cout << "clipxy" << a << b << clipXY(a, b) << endl;
 	drawCube();
 	drawWorldGnom();
 	drawCubeGnom();
