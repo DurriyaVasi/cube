@@ -725,7 +725,7 @@ bool A2::mouseMoveEvent (
                         eventHandled = true;
                 }
 		else if (mode == 5) {
-			float amount = ((float)xDiff)/20;
+			float amount = ((float)xDiff)/20.0f;
 			if (amount < 0.00f) {
 				amount = amount - 1.0f;
 				amount = amount * (-1.0f);
