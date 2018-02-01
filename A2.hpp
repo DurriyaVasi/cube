@@ -77,6 +77,7 @@ private:
         void drawCube();
 	void drawWorldGnom();
 	void drawCubeGnom();
+	void drawViewport();
 
 	glm::mat4 createViewMatrix(glm::vec3 lookAt, glm::vec3 lookFrom, glm::vec3 up);	
 	void createProj(float fovDegrees, float near, float far, float aspect);
@@ -86,6 +87,7 @@ private:
 	glm::mat4 scale(float xScale, float yScale, float zScale);
 
 	bool clipZ(glm::vec4 &point1, glm::vec4 &point2);
+	bool clipXY(glm::vec2 &point1, glm::vec2 &point2);
 
 	glm::vec2 orthographicProjection(glm::vec4 point);
 	glm::vec2 projection(glm::vec4 point);
@@ -105,4 +107,8 @@ private:
 	int mode;
 	double oldX;
 	char* modes[7] = {"O", "N", "P", "R", "T", "S", "V"};
+	float lowXBoundary;
+	float highXBoundary;
+	float lowYBoundary;
+	float highYBoundary;
 };

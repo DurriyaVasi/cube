@@ -25,7 +25,7 @@ VertexData::VertexData()
 //----------------------------------------------------------------------------------------
 // Constructor
 A2::A2()
-	: m_currentLineColour(vec3(0.0f)), worldMat(mat4(1.0f)), view(mat4(1.0f)), proj(mat4(1.0f)), model(mat4(1.0f)), modelScale(mat4(1.0f)), fovDegrees(30.0f), near(0.0f), far(20.0f), aspect(1.0f), mouseLeftPressed(false), mouseRightPressed(false), mouseMiddlePressed(false), mode(0), oldX(0)
+	: m_currentLineColour(vec3(0.0f)), worldMat(mat4(1.0f)), view(mat4(1.0f)), proj(mat4(1.0f)), model(mat4(1.0f)), modelScale(mat4(1.0f)), fovDegrees(30.0f), near(0.0f), far(20.0f), aspect(1.0f), mouseLeftPressed(false), mouseRightPressed(false), mouseMiddlePressed(false), mode(0), oldX(0), lowXBoundary(-0.9f), highXBoundary(0.9f), lowYBoundary(-0.9f), highYBoundary(0.9f)
 {
 
 }
@@ -74,6 +74,10 @@ void A2::reset() {
 	mouseMiddlePressed = false;
 	mode = 0;
 	oldX = 0;
+	lowXBoundary = -0.9f;
+	highXBoundary = 0.9f;
+	lowYBoundary = -0.9f;
+	highYBoundary = 0.9f;
 	createProj(fovDegrees, near, far, aspect);
 	view = createViewMatrix(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, -10.0f), vec3(0.0f, 1.0f, 0.0f));
 }
@@ -330,7 +334,157 @@ bool A2::clipZ(vec4 &point1, vec4 &point2) {
                 return true;  
 	} 
 }
+
+float findYOnLine(float slope, vec2 point, float x) {
+	return (slope * (x - point[0])) + point[1];
+}
+
+float findXOnLine(float slope, vec2 point, float y) {
+	return ((y - point[1])/slope) + point[0];
+}
 	
+bool A2::clipXY(vec2 &point1, vec2 &point2) {
+	bool point1In = true;
+	bool point2In = true;
+	if ((point1[0] < lowXBoundary) || 
+	    (point1[0] > highXBoundary) || 
+	    (point1[1] < lowYBoundary) || 
+	    (point1[1] > highYBoundary)) {
+		point1In = false;
+	}
+
+	cout << (point1[0] < lowXBoundary) << (point1[0] > highXBoundary)<< (point1[0] < lowYBoundary) << (point1[0] < lowXBoundary) << endl;
+	cout << ((point1[0] < lowXBoundary) ||
+            (point1[0] > highXBoundary) ||
+            (point1[1] < lowYBoundary) ||
+            (point1[1] > highYBoundary)) << endl;
+
+
+	if ((point2[0] < lowXBoundary) || 
+	    (point2[0] > highXBoundary) || 
+	    (point2[1] < lowYBoundary) || 
+	    (point2[1] > highYBoundary)) {
+                point2In = false;
+        }
+
+
+	cout << ((!point1In) && (!point2In)) << endl;
+
+
+	if (point1In && point2In) {
+		return true;
+	}
+	else if ((!point1In) && (!point2In)) {
+		cout << "here" << endl;
+		return false;
+	}
+	else {
+		float slope = (point2[1] - point1[1]) / (point2[0] - point1[0]);
+		if (!point1In) {
+			if (point1[0] < lowXBoundary) {
+				float y = findYOnLine(slope, point2, lowXBoundary);
+				bool goodPoint = true;
+				if (y < lowYBoundary || y > highYBoundary) {
+					goodPoint = false;
+				}
+				if (goodPoint) {
+					point1[0] = lowXBoundary;
+					point1[1] = y;
+					return true;
+				}
+			}
+			if (point1[1] < lowYBoundary) {
+				float x = findXOnLine(slope, point2, lowYBoundary);
+				bool goodPoint = true;
+				if (x < lowXBoundary || x > highXBoundary) {
+					goodPoint = false;
+				}
+				if (goodPoint) {
+					point1[0] = x;
+					point1[1] = lowYBoundary;
+					return true;
+				}
+			}
+			if (point1[0] > highXBoundary) {
+				float y = findYOnLine(slope, point2, highXBoundary);
+				bool goodPoint = true;
+				if (y < lowYBoundary || y > highYBoundary) {
+                                        goodPoint = false;
+                                }
+                                if (goodPoint) {
+                                        point1[0] = highXBoundary;
+                                        point1[1] = y;
+                                        return true;
+                                }
+			}
+			if (point1[1] > highYBoundary) {
+                                float x = findXOnLine(slope, point2, highYBoundary);
+                                bool goodPoint = true;
+                                if (x < lowXBoundary || x > highXBoundary) {
+                                        goodPoint = false;
+                                }
+                                if (goodPoint) {
+                                        point1[0] = x;
+                                        point1[1] = highYBoundary;
+                                        return true;
+                                }
+                        }		 
+		}
+		else if (!point2In) {
+			if (point2[0] < lowXBoundary) {
+                                float y = findYOnLine(slope, point2, lowXBoundary);
+                                bool goodPoint = true;
+                                if (y < lowYBoundary || y > highYBoundary) {
+                                        goodPoint = false;
+                                }
+                                if (goodPoint) {
+                                        point2[0] = lowXBoundary;
+                                        point2[1] = y;
+                                        return true;
+                                }
+                        }
+                        if (point2[1] < lowYBoundary) {
+                                float x = findXOnLine(slope, point2, lowYBoundary);
+                                bool goodPoint = true;
+                                if (x < lowXBoundary || x > highXBoundary) {
+                                        goodPoint = false;
+                                }
+                                if (goodPoint) {
+                                        point2[0] = x;
+                                        point2[1] = lowYBoundary;
+                                        return true;
+                                }
+                        }
+			if (point2[0] > highXBoundary) {
+				cout << "Here";
+                                float y = findYOnLine(slope, point2, highXBoundary);
+				cout << "y" << y << endl;
+                                bool goodPoint = true;
+                                if (y < lowYBoundary || y > highYBoundary) {
+                                        goodPoint = false;
+                                }
+                                if (goodPoint) {
+                                        point2[0] = highXBoundary;
+                                        point2[1] = y;
+                                        return true;
+                                }
+                        }
+                        if (point2[1] > highYBoundary) {
+                                float x = findXOnLine(slope, point2, highYBoundary);
+                                bool goodPoint = true;
+                                if (x < lowXBoundary || x > highXBoundary) {
+                                        goodPoint = false;
+                                }
+                                if (goodPoint) {
+                                        point2[0] = x;
+                                        point2[1] = highYBoundary;
+                                        return true;
+                                }
+                        }
+		}
+	}
+}	
+		
 		
 vec2 A2::drawProjection(vec4 point) {
 	point = normalize(point);
@@ -420,7 +574,8 @@ void A2::drawCube()
 	
 	setLineColour(vec3(0.0f, 0.0f, 0.0f));
 	for (int i = 0; i < 12; i++) {
-		if (keepLine[i]) {
+		cout << cubeLinesProj[i][0] << cubeLinesProj[i][1] << clipXY(cubeLinesProj[i][0], cubeLinesProj[i][1]) << endl;
+		if (keepLine[i] && clipXY(cubeLinesProj[i][0], cubeLinesProj[i][1])) {
 			drawLine(cubeLinesProj[i][0], cubeLinesProj[i][1]);
 		}
 	}
@@ -475,6 +630,18 @@ void A2::drawWorldGnom() {
 }
 
 
+void A2::drawViewport() {
+	vec2 point1(lowXBoundary, lowYBoundary);
+	vec2 point2(lowXBoundary, highYBoundary);
+	vec2 point3(highXBoundary, lowYBoundary);
+	vec2 point4(highXBoundary, highYBoundary);
+	setLineColour(vec3(1.0f, 1.0f, 1.0f));
+	drawLine(point1, point2);
+	drawLine(point1, point3);
+	drawLine(point2, point4);
+	drawLine(point3, point4);
+}	
+
 //----------------------------------------------------------------------------------------
 /*
  * Called once per frame, before guiLogic().
@@ -501,6 +668,12 @@ void A2::appLogic()
 	drawLine(vec2(0.25f, 0.25f), vec2(-0.25f, 0.25f));
 	drawLine(vec2(-0.25f, 0.25f), vec2(-0.25f, -0.25f));*/
 
+	drawViewport();
+
+	vec2 a(0.763, -0.573);
+	vec2 b(0.947, -0.284);
+//	cout << "true" << true << "false" << false << endl;
+//	cout << "clipxy" << a << b << clipXY(a, b) << endl;
 	drawCube();
 	drawWorldGnom();
 	drawCubeGnom();
