@@ -61,6 +61,23 @@ void A2::init()
 	view = createViewMatrix(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, -10.0f), vec3(0.0f, 1.0f, 0.0f) );
 }
 
+void A2::reset() {
+	worldMat = mat4(1.0f);
+	model = mat4(1.0f);
+	modelScale = mat4(1.0f);
+	fovDegrees = 30.0f;
+	near = 0.0f;
+	far = 20.0f;
+	aspect = 1.0f;
+	mouseLeftPressed = false;
+	mouseRightPressed = false;
+	mouseMiddlePressed = false;
+	mode = 0;
+	oldX = 0;
+	createProj(fovDegrees, near, far, aspect);
+	view = createViewMatrix(vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, -10.0f), vec3(0.0f, 1.0f, 0.0f));
+}
+
 //----------------------------------------------------------------------------------------
 void A2::createShaderProgram()
 {
@@ -517,6 +534,11 @@ void A2::guiLogic()
 			glfwSetWindowShouldClose(m_window, GL_TRUE);
 		}
 
+		// Create Button, and check if it was clicked:
+                if( ImGui::Button( "Reset Application" ) ) {
+                        reset();
+                }
+
 		ImGui::Text( "Framerate: %.1f FPS", ImGui::GetIO().Framerate );
 		ImGui::Text( "Near Plane: %.1f", near);
 		ImGui::Text( "Far Plane: %.1f", far);
@@ -840,6 +862,12 @@ bool A2::keyInputEvent (
 		}
 		else if (key == GLFW_KEY_V) {
 			mode = 6;
+		}
+		else if (key == GLFW_KEY_Q) {
+			glfwSetWindowShouldClose(m_window, GL_TRUE);
+                }
+		else if (key == GLFW_KEY_A) {
+			reset();
 		}
 		eventHandled = true;
 	}
