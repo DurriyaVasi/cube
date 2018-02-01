@@ -462,6 +462,12 @@ bool A2::clipXY(vec2 &point1, vec2 &point2) {
 		
 vec2 A2::drawProjection(vec4 point) {
 	point = normalize(point);
+	float vLength = highXBoundary - lowXBoundary;	
+	float wLength = 2;
+	float vHeight = highYBoundary - lowYBoundary;
+	float wHeight = 2;
+	point[0] = (vLength / wLength) * (point[0] - (-1)) + lowXBoundary;
+	point[1] = (vHeight / wHeight) * (point[1] - (-1)) + lowYBoundary;
         return vec2(point[0], point[1]);
 }
 	
@@ -902,8 +908,31 @@ bool A2::mouseMoveEvent (
 			eventHandled = true;
 		}
 		else if (mode == 6) {
-			
-			//TODO
+			if (mouseLeftPressed) {
+				// 768 / 2 = 384
+				double x = (xPos - 384) / 384;
+				double y = (yPos - 384) / 384;
+				y = y * -1;
+
+				cout << "x" << x << " y" << y << " yPos" << yPos << " ";
+				cout << "lowX" << lowXBoundary << " ";
+				cout << "highX" << highXBoundary << " ";
+				cout << "lowY" << lowYBoundary << " ";
+				cout << "highY" << highYBoundary << endl;
+
+				if (x > highXBoundary) {
+					highXBoundary = (float)x;
+				}
+				if (x < lowXBoundary) {
+					lowXBoundary = (float)x;
+				}
+				if (y > highYBoundary) {
+					highYBoundary = (float)y;
+				}
+				if (y < lowYBoundary) {
+					lowYBoundary = (float)y;
+				}
+			}
 		}
 	}											
 
@@ -939,6 +968,12 @@ bool A2::mouseButtonInputEvent (
 		if (actions == GLFW_PRESS) {
 			if (button == GLFW_MOUSE_BUTTON_LEFT) {
 				mouseLeftPressed = true;
+				if (mode == 6) {
+					highXBoundary = -2;
+					lowXBoundary = 2;
+					highYBoundary = -2;
+					lowYBoundary = 2;
+				}
 			}
 			if (button == GLFW_MOUSE_BUTTON_RIGHT) {
 				mouseRightPressed = true;
