@@ -791,7 +791,7 @@ bool A2::mouseMoveEvent (
 
 	if (!ImGui::IsMouseHoveringAnyWindow()) {
 		if (mode == 0) {
-			float angle = (float)(xDiff -1); //inverse so -1
+			float angle = (float)(xDiff * -1); //inverse so -1
 			if (mouseLeftPressed) {
 				mat4 rot = rotate('x', angle);
 				view = rot * view;
